@@ -1,0 +1,4 @@
+D:/home/Lab/qtcreator/MockOats/CMakeFiles/MockOats.dir
+D:/home/Lab/qtcreator/MockOats/CMakeFiles/edit_cache.dir
+D:/home/Lab/qtcreator/MockOats/CMakeFiles/rebuild_cache.dir
+D:/home/Lab/qtcreator/MockOats/CMakeFiles/MockOats_autogen.dir
