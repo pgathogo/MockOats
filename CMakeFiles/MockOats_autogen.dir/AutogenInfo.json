@@ -80,6 +80,11 @@
 			"D:/home/Lab/qtcreator/MockOats/schedulegriditem.h",
 			"MU",
 			"EWIEGA46WW/moc_schedulegriditem.cpp"
+		],
+		[
+			"D:/home/Lab/qtcreator/MockOats/scheduleitem.h",
+			"MU",
+			"EWIEGA46WW/moc_scheduleitem.cpp"
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -135,7 +140,8 @@
 	[
 		[ "D:/home/Lab/qtcreator/MockOats/main.cpp", "MU" ],
 		[ "D:/home/Lab/qtcreator/MockOats/mainwindow.cpp", "MU" ],
-		[ "D:/home/Lab/qtcreator/MockOats/schedulegriditem.cpp", "MU" ]
+		[ "D:/home/Lab/qtcreator/MockOats/schedulegriditem.cpp", "MU" ],
+		[ "D:/home/Lab/qtcreator/MockOats/scheduleitem.cpp", "MU" ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

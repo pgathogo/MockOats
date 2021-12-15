@@ -34,6 +34,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         schedulegriditem.h
         schedulegriditem.cpp
+        scheduleitem.h
+        scheduleitem.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
