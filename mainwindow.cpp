@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include "scheduleitem.h"
+#include "schedulegriditem.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,21 +9,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->vlSchedule->setSpacing(0);
-    ui->vlSchedule->setContentsMargins(0,0,0,0);
+    ui->vlSchedule->setSpacing(1);
+    ui->vlSchedule->setContentsMargins(0,0,0,2);
 
-    std::unique_ptr<OATS::ScheduleItem> schedule_item1 = std::make_unique<OATS::ScheduleItem>("background-color:green");
-    std::unique_ptr<OATS::ScheduleItem> schedule_item2 = std::make_unique<OATS::ScheduleItem>("background-color:yellow");
-    std::unique_ptr<OATS::ScheduleItem> schedule_item3 = std::make_unique<OATS::ScheduleItem>("background-color:blue");
+    for (int i=0; i < MAX_GRID_ITEMS; ++i){
+        std::unique_ptr<OATS::ScheduleGridItem> grid_item = std::make_unique<OATS::ScheduleGridItem>("background-color:green");
+        ui->vlSchedule->addWidget(grid_item.get());
+        m_schedule_grid.push_back(std::move(grid_item));
+    }
 
-    ui->vlSchedule->addWidget(schedule_item1.get());
-    ui->vlSchedule->addWidget(schedule_item2.get());
-    ui->vlSchedule->addWidget(schedule_item3.get());
     ui->vlSchedule->insertStretch(-1,1);
-
-    m_schedule_items.push_back(std::move(schedule_item1));
-    m_schedule_items.push_back(std::move(schedule_item2));
-    m_schedule_items.push_back(std::move(schedule_item3));
 
 }
 

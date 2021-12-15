@@ -6,3 +6,5 @@ D:/home/Lab/qtcreator/MockOats/mainwindow.cpp
  uic:./ui_mainwindow.h
 D:/home/Lab/qtcreator/MockOats/main.cpp
 D:/home/Lab/qtcreator/MockOats/scheduleitem.cpp
+D:/home/Lab/qtcreator/MockOats/schedulegriditem.h
+D:/home/Lab/qtcreator/MockOats/schedulegriditem.cpp
