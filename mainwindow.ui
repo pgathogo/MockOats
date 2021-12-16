@@ -17,10 +17,10 @@
    <widget class="QWidget" name="wSchedule" native="true">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>200</y>
-      <width>671</width>
-      <height>281</height>
+      <x>30</x>
+      <y>10</y>
+      <width>701</width>
+      <height>381</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -47,7 +47,7 @@
        <item>
         <layout class="QVBoxLayout" name="vlSchedule">
          <property name="spacing">
-          <number>0</number>
+          <number>1</number>
          </property>
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
@@ -80,10 +80,10 @@
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
+      <x>50</x>
+      <y>400</y>
       <width>641</width>
-      <height>171</height>
+      <height>161</height>
      </rect>
     </property>
     <property name="styleSheet">

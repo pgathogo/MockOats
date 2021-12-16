@@ -8,6 +8,7 @@
 #include <QDebug>
 
 #include "schedulegriditem.h"
+#include "scheduleitem.h"
 
 namespace OATS{
 
@@ -37,6 +38,8 @@ namespace OATS{
         return m_layout;
     }
 
+    /* -------------- Panel -------------- */
+
     TimePanel::TimePanel(QWidget* parent)
         :Panel(parent)
     {
@@ -56,7 +59,7 @@ namespace OATS{
     {
     }
 
-    void set_label(QString text)
+    void TimePanel::set_label(QString text)
     {
         //m_label->setText(text);
     }
@@ -74,6 +77,13 @@ namespace OATS{
         menu.addAction(act_time);
         menu.exec(event->globalPos());
     }
+
+    void TimePanel::update(ScheduleItem* schedule_item)
+    {
+        set_label(QString::fromStdString(schedule_item->time()));
+    }
+
+    /* -------------- TimePanel -------------- */
 
     TrackPanel::TrackPanel(QWidget* parent)
         :Panel(parent)
@@ -117,6 +127,12 @@ namespace OATS{
     {
     }
 
+    void TrackPanel::update(ScheduleItem* schedule_item)
+    {
+    }
+
+    /* -------------- StatusPanel -------------- */
+
     StatusPanel::StatusPanel(QWidget* parent)
         :Panel(parent)
     {
@@ -126,6 +142,12 @@ namespace OATS{
     StatusPanel::~StatusPanel()
     {
     }
+
+    void StatusPanel::update(ScheduleItem* schedule_item)
+    {
+    }
+
+    /* -------------- PlayModePanel -------------- */
 
     PlayModePanel::PlayModePanel(QWidget* parent)
         :Panel(parent)
@@ -137,11 +159,20 @@ namespace OATS{
     {
     }
 
+    void PlayModePanel::update(ScheduleItem* schedule_item)
+    {
+    }
+
+
+    /* -------------- ScheduleGridItem -------------- */
 
     int ScheduleGridItem::g_index{0};
 
-    ScheduleGridItem::ScheduleGridItem(QString style)
+    ScheduleGridItem::ScheduleGridItem(OATS::ScheduleItem* sched_item)
+        :m_schedule_item{sched_item}
     {
+        m_schedule_item->attach(this);
+
         m_item_index = ++g_index;
 
         //setStyleSheet(style);
@@ -152,13 +183,14 @@ namespace OATS{
         m_play_mode_panel = std::make_unique<PlayModePanel>(this);
 
         m_layout = new QHBoxLayout();
+        m_layout->setSpacing(0);
+        m_layout->setContentsMargins(5,0,0,0);
+
         m_layout->addWidget(m_time_panel.get());
         m_layout->addWidget(m_track_panel.get());
         m_layout->addWidget(m_status_panel.get());
         m_layout->addWidget(m_play_mode_panel.get());
 
-        m_layout->setSpacing(0);
-        m_layout->setContentsMargins(0,0,0,0);
         m_layout->insertStretch(-1,1);
 
         setLayout(m_layout);
@@ -171,6 +203,21 @@ namespace OATS{
     int ScheduleGridItem::index()
     {
         return m_item_index;
+    }
+
+    void ScheduleGridItem::update(Subject* changed_subject)
+    {
+        auto si = dynamic_cast<ScheduleItem*>(changed_subject);
+        qDebug() << "Schedule Ref: "<< si->schedule_ref() << QString::fromStdString(si->audio().title());
+    }
+
+    std::string ScheduleGridItem::format_message(Message message)
+    {
+        return "";
+    }
+    std::string ScheduleGridItem::name()
+    {
+        return "";
     }
 
 }

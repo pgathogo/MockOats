@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "subjectobserver.h"
 
 namespace OATS{
 
@@ -20,7 +21,7 @@ namespace OATS{
         int m_duration;
     };
 
-    class ScheduleItem
+    class ScheduleItem : public Subject
     {
     public:
         enum SchedType{SONG, COMM, JINGLE, DROP};

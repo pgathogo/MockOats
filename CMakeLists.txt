@@ -36,6 +36,8 @@ set(PROJECT_SOURCES
         schedulegriditem.cpp
         scheduleitem.h
         scheduleitem.cpp
+        subjectobserver.h
+        subjectobserver.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
