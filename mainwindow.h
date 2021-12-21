@@ -32,6 +32,14 @@ public:
     OATS::ScheduleItem* schedule_item(int);
     OATS::ScheduleItem* subject_item(int);
 
+    void print_schedule_items();
+    void print_grid_items();
+
+private slots:
+    void audio_move_up(int);
+    void audio_move_down(int);
+    void delete_schedule_item(int);
+
 private:
     Ui::MainWindow *ui;
     std::vector<std::unique_ptr<OATS::ScheduleItem>> m_grid_subjects;
@@ -40,5 +48,8 @@ private:
 
     static int s_sched_ref;
     static std::string s_channel;
+
+private slots:
+    void scroll_changed(int);
 
 };

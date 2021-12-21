@@ -1,4 +1,6 @@
 .ninja_deps
 .ninja_log
 *.exe
+*.obj
+*.txt
 MockOats_autogen/

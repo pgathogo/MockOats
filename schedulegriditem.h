@@ -1,11 +1,12 @@
 #pragma once
 
+#include <QFrame>
 #include <memory>
 #include "subjectobserver.h"
 
 class QWidget;
+class QGridLayout;
 class QBoxLayout;
-class QFrame;
 class QLabel;
 class QVBoxLayout;
 class QHBoxLayout;
@@ -23,30 +24,33 @@ namespace OATS{
         Panel(QWidget*);
         virtual ~Panel();
         virtual void update(ScheduleItem* schedule_item) = 0;
-        QVBoxLayout* main_layout();
         int index();
+        QWidget* parent();
     private:
-        QVBoxLayout* m_layout;
         QWidget* m_parent;
     };
 
     class TimePanel: public Panel
     {
+        Q_OBJECT;
         public:
             TimePanel(QWidget*);
             ~TimePanel() override;
             void set_label(QString);
             void update(ScheduleItem* schedule_item) override;
+            QVBoxLayout* main_layout();
         protected:
             void contextMenuEvent(QContextMenuEvent* event) override;
         private slots:
             void time_menu();
         private:
+            QVBoxLayout* m_layout;
             QLabel* m_label;
     };
 
     class TrackPanel : public Panel
     {
+        Q_OBJECT
     public:
         TrackPanel(QWidget*);
         ~TrackPanel() override;
@@ -57,6 +61,12 @@ namespace OATS{
         void move_up();
         void move_down();
         void make_audio_current();
+        void delete_item();
+    private:
+        QGridLayout* m_layout;
+        QLabel* m_track_label;
+        QLabel* m_artist_label;
+        QLabel* m_duration_label;
     };
 
     class StatusPanel : public Panel
@@ -78,6 +88,8 @@ namespace OATS{
 
     class ScheduleGridItem : public QWidget, public Observer
     {
+        Q_OBJECT
+
     public:
         ScheduleGridItem(ScheduleItem*);
         ~ScheduleGridItem();
@@ -87,6 +99,13 @@ namespace OATS{
         void update(Subject* changed_subject) override;
         std::string format_message(Message message) override;
         std::string name() override;
+
+        void set_item_index(int);
+
+    signals:
+        void move_up(int);
+        void move_down(int);
+        void delete_item(int);
 
     private:
         QHBoxLayout* m_layout;

@@ -1,6 +1,6 @@
-#include <QFrame>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
 #include <QFont>
 #include <QMenu>
@@ -16,12 +16,9 @@ namespace OATS{
         :m_parent{parent}
     {
       setFrameShape(QFrame::Panel);
-      setFrameShadow(QFrame::Raised);
+      setFrameShadow(QFrame::Plain);
+      setLineWidth(1);
       setFixedHeight(60);
-      m_layout = new QVBoxLayout();
-      m_layout->setSpacing(0);
-      m_layout->setContentsMargins(0,0,0,0);
-      setLayout(main_layout());
     }
 
     Panel::~Panel()
@@ -33,16 +30,21 @@ namespace OATS{
         return dynamic_cast<ScheduleGridItem*>(m_parent)->index();
     }
 
-    QVBoxLayout* Panel::main_layout()
+    QWidget* Panel::parent()
     {
-        return m_layout;
+        return m_parent;
     }
+
 
     /* -------------- Panel -------------- */
 
     TimePanel::TimePanel(QWidget* parent)
         :Panel(parent)
     {
+        m_layout = new QVBoxLayout();
+        m_layout->setSpacing(0);
+        m_layout->setContentsMargins(0,0,0,0);
+
         setFixedWidth(80);
         QFont f;
         f.setBold(true);
@@ -52,16 +54,18 @@ namespace OATS{
         m_label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         m_label->setFont(f);
 
-        main_layout()->addWidget(m_label);
+        m_layout->addWidget(m_label);
+        setLayout(m_layout);
     }
 
     TimePanel::~TimePanel()
     {
+        delete m_layout;
     }
 
     void TimePanel::set_label(QString text)
     {
-        //m_label->setText(text);
+        m_label->setText(text);
     }
 
     void TimePanel::time_menu()
@@ -83,17 +87,48 @@ namespace OATS{
         set_label(QString::fromStdString(schedule_item->time()));
     }
 
-    /* -------------- TimePanel -------------- */
+    QVBoxLayout* TimePanel::main_layout()
+    {
+        return m_layout;
+    }
+
+    /* -------------- TrackPanel -------------- */
 
     TrackPanel::TrackPanel(QWidget* parent)
         :Panel(parent)
     {
+        constexpr static int COLUMN_0 = 0;
+        constexpr static int COLUMN_1 = 1;
+        constexpr static int ROW_0 = 0;
+        constexpr static int ROW_1 = 1;
+
         setFixedWidth(385);
+
+        m_layout = new QGridLayout();
+
+        QFont f;
+        f.setBold(true);
+        f.setPointSize(12);
+        m_track_label = new QLabel("Track Title");
+        m_track_label->setFont(f);
+
+        m_artist_label = new QLabel("Artist");
+        m_duration_label = new QLabel("03:02:07");
+
+        m_layout->addWidget(m_track_label, ROW_0, COLUMN_0);
+        m_layout->addWidget(m_duration_label, ROW_0, COLUMN_1);
+        m_layout->addWidget(m_artist_label, ROW_1, COLUMN_0);
+        m_layout->setColumnStretch(COLUMN_0,1);
+        m_layout->setContentsMargins(5,0,5,0);
+
+        setLayout(m_layout);
+
     }
 
 
     TrackPanel::~TrackPanel()
     {
+        delete m_layout;
     }
 
     void TrackPanel::contextMenuEvent(QContextMenuEvent* event)
@@ -102,14 +137,17 @@ namespace OATS{
         auto act_move_up = new QAction("Move Up");
         auto act_move_down = new QAction("Move Down");
         auto act_make_current = new QAction("Make Current");
+        auto act_delete_item = new QAction("Delete Item");
 
         connect(act_move_up, &QAction::triggered, this, TrackPanel::move_up);
         connect(act_move_down, &QAction::triggered, this, TrackPanel::move_down);
         connect(act_make_current, &QAction::triggered, this, TrackPanel::make_audio_current);
+        connect(act_delete_item, &QAction::triggered, this, TrackPanel::delete_item);
 
         menu.addAction(act_move_up);
         menu.addAction(act_move_down);
         menu.addAction(act_make_current);
+        menu.addAction(act_delete_item);
 
         menu.exec(event->globalPos());
 
@@ -117,18 +155,27 @@ namespace OATS{
 
     void TrackPanel::move_up()
     {
+        emit dynamic_cast<ScheduleGridItem*>(parent())->move_up(index());
     }
 
     void TrackPanel::move_down()
     {
+        emit dynamic_cast<ScheduleGridItem*>(parent())->move_down(index());
     }
 
     void TrackPanel::make_audio_current()
     {
     }
 
+    void TrackPanel::delete_item()
+    {
+        emit dynamic_cast<ScheduleGridItem*>(parent())->delete_item(index());
+    }
+
     void TrackPanel::update(ScheduleItem* schedule_item)
     {
+        m_track_label->setText(QString::fromStdString(schedule_item->audio().title()));
+        m_artist_label->setText(QString::fromStdString(schedule_item->audio().artist()));
     }
 
     /* -------------- StatusPanel -------------- */
@@ -173,7 +220,7 @@ namespace OATS{
     {
         m_schedule_item->attach(this);
 
-        m_item_index = ++g_index;
+        m_item_index = g_index++;
 
         //setStyleSheet(style);
 
@@ -184,7 +231,7 @@ namespace OATS{
 
         m_layout = new QHBoxLayout();
         m_layout->setSpacing(0);
-        m_layout->setContentsMargins(5,0,0,0);
+        m_layout->setContentsMargins(0,0,0,0);
 
         m_layout->addWidget(m_time_panel.get());
         m_layout->addWidget(m_track_panel.get());
@@ -198,6 +245,7 @@ namespace OATS{
 
     ScheduleGridItem::~ScheduleGridItem()
     {
+        delete m_layout;
     }
 
     int ScheduleGridItem::index()
@@ -205,16 +253,26 @@ namespace OATS{
         return m_item_index;
     }
 
+    void ScheduleGridItem::set_item_index(int idx)
+    {
+        m_item_index = idx;
+    }
+
     void ScheduleGridItem::update(Subject* changed_subject)
     {
         auto si = dynamic_cast<ScheduleItem*>(changed_subject);
-        qDebug() << "Schedule Ref: "<< si->schedule_ref() << QString::fromStdString(si->audio().title());
+
+        //qDebug() << "Index: "<< index() <<  "Update: "<< QString::fromStdString(si->audio().title());
+
+        m_time_panel->update(si);
+        m_track_panel->update(si);
     }
 
     std::string ScheduleGridItem::format_message(Message message)
     {
         return "";
     }
+
     std::string ScheduleGridItem::name()
     {
         return "";
