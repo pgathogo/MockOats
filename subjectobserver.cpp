@@ -26,12 +26,20 @@ void Subject::detach(Observer *)
 
 }
 
+void Subject::notify()
+{
+    for (auto o : m_observers){
+        o->update(this);
+    }
+}
+
 void Subject::notify(Subject* changed_subject)
 {
     for(auto o : m_observers){
         o->update(changed_subject);
     }
 }
+
 
 Subject::Subject()
 {

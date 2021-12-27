@@ -25,6 +25,9 @@ namespace OATS{
         virtual ~Panel();
         virtual void update(ScheduleItem* schedule_item) = 0;
         int index();
+        int parent_index();
+        int parent_ref();
+
         QWidget* parent();
     private:
         QWidget* m_parent;
@@ -57,11 +60,13 @@ namespace OATS{
         void update(ScheduleItem* schedule_item) override;
     protected:
         void contextMenuEvent(QContextMenuEvent* event) override;
+        void mousePressEvent(QMouseEvent* event) override;
     private slots:
         void move_up();
         void move_down();
         void make_audio_current();
         void delete_item();
+        void play_item();
     private:
         QGridLayout* m_layout;
         QLabel* m_track_label;
@@ -75,6 +80,11 @@ namespace OATS{
         StatusPanel(QWidget*);
         ~StatusPanel() override;
         void update(ScheduleItem* schedule_item) override;
+    private:
+        QVBoxLayout* m_layout;
+        QLabel* m_status1;
+        QLabel* m_status2;
+
     };
 
     class PlayModePanel : public Panel
@@ -95,17 +105,25 @@ namespace OATS{
         ~ScheduleGridItem();
 
         QHBoxLayout* main_layout();
-        int index();
+        int grid_index();
+        int subject_index();
+        void set_subject(Subject*);
         void update(Subject* changed_subject) override;
         std::string format_message(Message message) override;
         std::string name() override;
 
         void set_item_index(int);
+        ScheduleItem* schedule_item();
+        void refresh();
+        int subject_ref();
 
     signals:
-        void move_up(int);
-        void move_down(int);
+        void move_up(int, int);
+        void move_down(int, int);
         void delete_item(int);
+        void insert_item(int, int);
+        void make_current(int, int);
+        void play_item(int, int);
 
     private:
         QHBoxLayout* m_layout;
@@ -116,7 +134,9 @@ namespace OATS{
 
         ScheduleItem* m_schedule_item;
 
-        int m_item_index;
+        int m_grid_index;
+        int m_subject_index;
+
         static int g_index;
     };
 }

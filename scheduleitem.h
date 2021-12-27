@@ -25,10 +25,15 @@ namespace OATS{
     {
     public:
         enum SchedType{SONG, COMM, JINGLE, DROP};
+        enum ItemStatus{WAITING, CUED, PLAYING, PLAYED};
+
         ScheduleItem();
 
         int schedule_ref();
-        std::string play_status();
+        int index();
+        void set_index(int);
+
+        ItemStatus item_status();
         std::string play_channel();
         SchedType schedule_type();
         int hour();
@@ -36,16 +41,19 @@ namespace OATS{
         Audio audio();
 
         void set_schedule_ref(int);
-        void set_play_status(std::string);
+        void set_item_status(ItemStatus);
         void set_play_channel(std::string);
         void set_schedule_type(SchedType);
         void set_hour(int);
         void set_time(std::string);
         void set_audio(Audio);
 
+        std::string item_status_text();
+
     private:
         int m_schedule_ref;
-        std::string m_play_status;
+        int m_index;
+        ItemStatus m_item_status;
         std::string m_play_channel;
         SchedType m_schedule_type;
         int m_hour;

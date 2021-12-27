@@ -23,6 +23,7 @@ class Subject{
         virtual ~Subject();
         virtual void attach(Observer*);
         virtual void detach(Observer*);
+        virtual void notify();
         virtual void notify(Subject*);
     protected:
         Subject();

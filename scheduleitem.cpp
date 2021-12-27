@@ -37,6 +37,8 @@ namespace OATS{
     }
 
     ScheduleItem::ScheduleItem()
+        :m_schedule_ref{-1}
+        ,m_index{-1}
     {
     }
 
@@ -44,10 +46,22 @@ namespace OATS{
     {
         return m_schedule_ref;
     }
-    std::string ScheduleItem::play_status()
+
+    int ScheduleItem::index()
     {
-        return m_play_status;
+        return m_index;
     }
+
+    void ScheduleItem::set_index(int i)
+    {
+        m_index = i;
+    }
+
+    ScheduleItem::ItemStatus ScheduleItem::item_status()
+    {
+        return m_item_status;
+    }
+
     std::string ScheduleItem::play_channel()
     {
         return m_play_channel;
@@ -75,9 +89,9 @@ namespace OATS{
     {
         m_schedule_ref = sched_ref;
     }
-    void ScheduleItem::set_play_status(std::string p_status)
+    void ScheduleItem::set_item_status(ScheduleItem::ItemStatus item_status)
     {
-        m_play_status = p_status;
+        m_item_status = item_status;
     }
     void ScheduleItem::set_play_channel(std::string channel)
     {
@@ -98,6 +112,24 @@ namespace OATS{
     void ScheduleItem::set_audio(Audio audio)
     {
         m_audio = audio;
+    }
+
+    std::string ScheduleItem::item_status_text()
+    {
+        switch (item_status())
+        {
+        case WAITING:
+            return "WAITING";
+            break;
+        case CUED:
+            return "CUED";
+            break;
+        case PLAYING:
+            return "PLAYING";
+            break;
+        default:
+            return "WAITING";
+        }
     }
 
 }
