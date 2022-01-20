@@ -1,3 +1,4 @@
+#include <math.h>
 #include <chrono>
 #include <QDebug>
 #include <QScrollBar>
@@ -72,7 +73,11 @@ MainWindow::MainWindow(QWidget *parent)
     auto fast_flash_interval = 250ms;
     m_fast_flash_timer = std::make_unique<QTimer>(this);
     connect(m_fast_flash_timer.get(), &QTimer::timeout, this, &MainWindow::fast_flash);
-    //m_fast_flash_timer->start(fast_flash_interval);
+    //m_fast_flash_timer->start(fast_flash_interval.count());
+
+    auto countdown_interval = 50ms;
+    m_countdown_timer = std::make_unique<QTimer>(this);
+    connect(m_countdown_timer.get(), &QTimer::timeout, this, &MainWindow::count_down);
 
     // Main Player Timer
     auto main_timer_interval = 25ms;
@@ -142,7 +147,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio;
     audio.set_title("Let It Go");
     audio.set_artist("Frozen");
-    audio.set_duration(15000); // 2.5 minutes
+    audio.set_duration(15000); // 15 seconds
+    audio.set_intro(3000);
     //audio.set_duration(150000); // 2.5 minutes
 
     auto sched_item = std::make_unique<OATS::ScheduleItem>();
@@ -159,7 +165,9 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio1;
     audio1.set_title("Waiting on the World to Change");
     audio1.set_artist("John Mayer");
-    audio1.set_duration(204000); // 3.4 minutes
+    audio1.set_duration(15000);
+    audio1.set_intro(5000);
+    //audio1.set_duration(204000); // 3.4 minutes
     auto sched_item1 = std::make_unique<OATS::ScheduleItem>();
     sched_item1->set_schedule_ref(s_sched_ref++);
     sched_item1->set_item_status(OATS::ItemStatus::WAITING);
@@ -174,7 +182,9 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio2;
     audio2.set_title("Tuonela");
     audio2.set_artist("Therion");
-    audio2.set_duration(192000); // 3.2
+    //audio2.set_duration(192000); // 3.2
+    audio2.set_duration(15000);
+    audio2.set_intro(2000);
     auto sched_item2 = std::make_unique<OATS::ScheduleItem>();
     sched_item2->set_schedule_ref(s_sched_ref++);
     sched_item2->set_item_status(OATS::ItemStatus::WAITING);
@@ -189,7 +199,9 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio3;
     audio3.set_title("Ever Dream");
     audio3.set_artist("Nightwish");
-    audio3.set_duration(120000); //2 minutes
+    audio3.set_duration(15000);
+    audio3.set_intro(3000);
+    //audio3.set_duration(120000); //2 minutes
     auto sched_item3 = std::make_unique<OATS::ScheduleItem>();
     sched_item3->set_schedule_ref(s_sched_ref++);
     sched_item3->set_item_status(OATS::ItemStatus::WAITING);
@@ -204,7 +216,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio4;
     audio4.set_title("The 13th Floor");
     audio4.set_artist("Sirenia");
-    audio4.set_duration(156000); //2.6
+    audio4.set_duration(15000); //2.6
+    //audio4.set_duration(156000); //2.6
     auto sched_item4 = std::make_unique<OATS::ScheduleItem>();
     sched_item4->set_schedule_ref(s_sched_ref++);
     sched_item4->set_item_status(OATS::ItemStatus::WAITING);
@@ -220,7 +233,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio5;
     audio5.set_title("Christina");
     audio5.set_artist("Theatres Des Vampires");
-    audio5.set_duration(204000); //3.4
+    //audio5.set_duration(204000); //3.4
+    audio5.set_duration(15000); //3.4
     auto sched_item5 = std::make_unique<OATS::ScheduleItem>();
     sched_item5->set_schedule_ref(s_sched_ref++);
     sched_item5->set_item_status(OATS::ItemStatus::WAITING);
@@ -235,7 +249,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio6;
     audio6.set_title("No Way Out");
     audio6.set_artist("Dust in Mind");
-    audio6.set_duration(186000); // 3.1
+    //audio6.set_duration(186000); // 3.1
+    audio6.set_duration(15000); // 3.1
     auto sched_item6 = std::make_unique<OATS::ScheduleItem>();
     sched_item6->set_schedule_ref(s_sched_ref++);
     sched_item6->set_item_status(OATS::ItemStatus::WAITING);
@@ -250,7 +265,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio7;
     audio7.set_title("Lying From You");
     audio7.set_artist("Linkin Park");
-    audio7.set_duration(174000); // 2.9
+    //audio7.set_duration(174000); // 2.9
+    audio7.set_duration(15000); // 2.9
     auto sched_item7 = std::make_unique<OATS::ScheduleItem>();
     sched_item7->set_schedule_ref(s_sched_ref++);
     sched_item7->set_item_status(OATS::ItemStatus::WAITING);
@@ -265,7 +281,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio8;
     audio8.set_title("Float On");
     audio8.set_artist("Modest Mouse");
-    audio8.set_duration(210000); //3.5
+    //audio8.set_duration(210000); //3.5
+    audio8.set_duration(15000); //3.5
     auto sched_item8 = std::make_unique<OATS::ScheduleItem>();
     sched_item8->set_schedule_ref(s_sched_ref++);
     sched_item8->set_item_status(OATS::ItemStatus::WAITING);
@@ -280,7 +297,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio9;
     audio9.set_title("Maniac - From Flashdance");
     audio9.set_artist("Micheal Sembello");
-    audio9.set_duration(180000); //3
+    //audio9.set_duration(180000); //3
+    audio9.set_duration(15000); //3
     auto sched_item9 = std::make_unique<OATS::ScheduleItem>();
     sched_item9->set_schedule_ref(s_sched_ref++);
     sched_item9->set_item_status(OATS::ItemStatus::WAITING);
@@ -295,7 +313,8 @@ void MainWindow::load_schedule(int hr)
     OATS::Audio audio10;
     audio10.set_title("Sugar, We're Going Down");
     audio10.set_artist("Fall Out Boy");
-    audio10.set_duration(132000); //2.2
+    //audio10.set_duration(132000); //2.2
+    audio10.set_duration(15000); //2.2
     auto sched_item10 = std::make_unique<OATS::ScheduleItem>();
     sched_item10->set_schedule_ref(s_sched_ref++);
     sched_item10->set_item_status(OATS::ItemStatus::WAITING);
@@ -450,8 +469,6 @@ std::unique_ptr<OATS::ScheduleItem> MainWindow::make_schedule_item()
 
 void MainWindow::display_schedule(int start_index)
 {
-    qDebug() << "Display Sched: "<< start_index;
-
     for(int i=0; i < MAX_GRID_ITEMS; ++i) {
 
         int schedule_index = i+start_index;
@@ -665,9 +682,9 @@ void MainWindow::fast_flash()
 
 void MainWindow::status_timer()
 {
-    long trigger_ticker = get_tick_count();
     int elapsed{0};
     int remaining{0};
+    long trigger_ticker = get_tick_count();
 
     switch (m_outputA->panel_status())
     {
@@ -678,14 +695,16 @@ void MainWindow::status_timer()
         if ( (m_outputA->start_trigger_tick_stamp() > -1) &&
              (m_outputA->start_trigger_tick_stamp() <= (trigger_ticker+0)))
         {
+            qDebug() << "status_timer::CUED=>OP_A";
+            qDebug() << "play_audio(m_outputA)";
+            if (m_outputB->panel_status() == OATS::PanelStatus::PLAYING)
+                stop_audio(m_outputB);
+
             play_audio(m_outputA);
         }
         // Do some outputC stuff
         break;
     case OATS::PanelStatus::PLAYING:
-//        qDebug() << "FTTS: " << m_outputA->fade_trigger_tick_stamp();
-//        qDebug() << "**TT**: " << trigger_ticker;
-
         if ( (m_outputA->fade_trigger_tick_stamp() > 0) &&
              (m_outputA->fade_trigger_tick_stamp()<= trigger_ticker))
         {
@@ -693,21 +712,180 @@ void MainWindow::status_timer()
 
             elapsed = trigger_ticker - m_outputA->start_tick_stamp();
 
-
-
             remaining = m_outputA->schedule_item()->audio().duration() - elapsed;
             m_outputA->set_time_remaining(remaining);
 
-            qDebug() << "ELAPSED: "<< elapsed;
-            qDebug() << "REM: "<< remaining;
-
-            if ( remaining < 0 ){
+            if ( remaining <= 0 ){
                 // protect C output
                 stop_audio(m_outputA);
             }
         }
 
 
+    }
+
+    switch(m_outputB->panel_status())
+    {
+     case OATS::PanelStatus::WAITING:
+        m_outputB->set_start_trigger_tick_stamp(-1);
+        break;
+     case OATS::PanelStatus::CUED:
+        if ((m_outputB->start_trigger_tick_stamp() > -1 ) &&
+            (m_outputB->start_trigger_tick_stamp() <= (trigger_ticker+0)))
+        {
+            play_audio(m_outputB);
+        }
+        break;
+    case OATS::PanelStatus::PLAYING:
+        if ( (m_outputB->fade_trigger_tick_stamp() > 0) &&
+             (m_outputB->fade_trigger_tick_stamp() <= trigger_ticker))
+        {
+            elapsed = trigger_ticker - m_outputB->start_tick_stamp();
+            remaining = m_outputB->schedule_item()->audio().duration()-elapsed;
+            m_outputB->set_time_remaining(remaining);
+
+
+            if (remaining <= 0){
+                stop_audio(m_outputB);
+            }
+        }
+    }
+}
+
+void MainWindow::count_down()
+{
+    auto trigger_ticker = get_tick_count();
+
+    switch (m_outputA->panel_status())
+    {
+    case OATS::PanelStatus::WAITING:
+        break;
+    case OATS::PanelStatus::CUED:
+        break;
+
+    case OATS::PanelStatus::PLAYING:
+        int elapsed = trigger_ticker - m_outputA->start_tick_stamp();
+        int remaining = m_outputA->schedule_item()->audio().duration() - elapsed;
+
+        if (elapsed < m_outputA->schedule_item()->audio().intro()){
+            // intro is still in progress
+            auto duration_seconds = (int)(m_outputA->schedule_item()->audio().intro() - elapsed)/100;
+            int ds_u1 = (int)duration_seconds/10;
+            int ds_u2 = duration_seconds % 10;
+            QString cue_string = QString("%1:%2").arg(ds_u1, 2, 10, QChar('0'))
+                                                                 .arg(ds_u2, 2, 10, QChar('0'));
+            m_outputA->set_cue_time_string(cue_string);
+            m_outputA->set_progress_bar_background(OATS::ProgressBarBGColor::RED);
+
+            m_outputA->update_progress_bar( 100 - round(( ((float)(m_outputA->schedule_item()->audio().intro() - elapsed ) /
+                                     m_outputA->schedule_item()->audio().intro()) * 100 )
+                    ) );
+
+
+        } else if ( remaining < m_outputA->schedule_item()->audio().fade_out()) {
+            int duration_seconds = (int)remaining / 1000;
+            int ds_u1 = (int)duration_seconds / 60;
+            int ds_u2 = duration_seconds % 60;
+            QString cue_string = QString("%1:%2").arg(ds_u1, 2, 10, QChar('0'))
+                                                                 .arg(ds_u2, 2, 10, QChar('0'));
+            m_outputA->set_cue_time_string(cue_string);
+            m_outputA->set_progress_bar_background(OATS::ProgressBarBGColor::GREEN);
+
+            if (m_outputA->schedule_item()->audio().fade_out() > 0) {
+                m_outputA->update_progress_bar(
+                            100 - round( ((float)m_outputA->time_remaining() /
+                                          m_outputA->schedule_item()->audio().fade_out()
+                                          ) * 100 )
+                            );
+            }
+        } else {
+            int duration_seconds = (int)remaining / 1000;
+            int ds_u1 = (int)duration_seconds / 60;
+            int ds_u2 = duration_seconds % 60;
+            QString cue_string = QString("%1:%2").arg(ds_u1, 2, 10, QChar('0'))
+                                                 .arg(ds_u2, 2, 10, QChar('0'));
+            m_outputA->set_cue_time_string(cue_string);
+
+            m_outputA->set_progress_bar_background(OATS::ProgressBarBGColor::BLUE);
+
+            // Chunck Color!!!!!
+//			if (m_outputA->schedule_item()->audio().fade_out() > 0) {
+//				m_outputA->set_progress_bar_background();
+//			} else {
+//				m_outputA->set_progress_bar_background();
+//			}
+
+            m_outputA->update_progress_bar(100 - round(  ((float)m_outputA->time_remaining() /
+                                 (m_outputA->schedule_item()->audio().duration() -
+                                  m_outputA->schedule_item()->audio().intro()) ) * 100 )
+                    );
+
+        }
+    }
+
+    // Output B
+    switch (m_outputB->panel_status())
+    {
+     case OATS::PanelStatus::WAITING:
+        break;
+     case OATS::PanelStatus::CUED:
+        break;
+     case OATS::PanelStatus::PLAYING:
+        int elapsed = trigger_ticker - m_outputB->start_tick_stamp();
+        int remaining = m_outputB->schedule_item()->audio().duration() - elapsed;
+
+        if (elapsed < m_outputB->schedule_item()->audio().intro()){
+            // intro is still in progress
+            auto duration_seconds = (int)(m_outputB->schedule_item()->audio().intro() - elapsed)/100;
+            int ds_u1 = (int)duration_seconds/10;
+            int ds_u2 = duration_seconds % 10;
+            QString cue_string = QString("%1:%2").arg(ds_u1, 2, 10, QChar('0'))
+                                                                 .arg(ds_u2, 2, 10, QChar('0'));
+            m_outputB->set_cue_time_string(cue_string);
+            m_outputB->set_progress_bar_background(OATS::ProgressBarBGColor::RED);
+
+            m_outputB->update_progress_bar(
+                        100 - round(((float)(m_outputB->schedule_item()->audio().intro() - elapsed ) /
+                                     m_outputB->schedule_item()->audio().intro()) * 100 )
+                    );
+        } else if ( remaining < m_outputB->schedule_item()->audio().fade_out()) {
+            int duration_seconds = (int)remaining / 1000;
+            int ds_u1 = (int)duration_seconds / 60;
+            int ds_u2 = duration_seconds % 60;
+            QString cue_string = QString("%1:%2").arg(ds_u1, 2, 10, QChar('0'))
+                                                                 .arg(ds_u2, 2, 10, QChar('0'));
+            m_outputB->set_cue_time_string(cue_string);
+            m_outputB->set_progress_bar_background(OATS::ProgressBarBGColor::GREEN);
+
+            if (m_outputB->schedule_item()->audio().fade_out() > 0) {
+                m_outputB->update_progress_bar(
+                            100 - round( ((float)m_outputB->time_remaining() /
+                                          m_outputB->schedule_item()->audio().fade_out()
+                                          ) * 100 )
+                            );
+            }
+        } else {
+            int duration_seconds = (int)remaining / 1000;
+            int ds_u1 = (int)duration_seconds / 60;
+            int ds_u2 = duration_seconds % 60;
+            QString cue_string = QString("%1:%2").arg(ds_u1, 2, 10, QChar('0'))
+                                                 .arg(ds_u2, 2, 10, QChar('0'));
+            m_outputB->set_cue_time_string(cue_string);
+
+            m_outputB->set_progress_bar_background(OATS::ProgressBarBGColor::BLUE);
+
+            // Chunck Color!!!!!
+//			if (m_outputA->schedule_item()->audio().fade_out() > 0) {
+//				m_outputA->set_progress_bar_background();
+//			} else {
+//				m_outputA->set_progress_bar_background();
+//			}
+            m_outputB->update_progress_bar(100 - round( ((float)m_outputB->time_remaining() /
+                                      (m_outputB->schedule_item()->audio().duration() -
+                                       m_outputB->schedule_item()->audio().intro())
+                                      ) * 100 ) );
+
+        }
     }
 }
 
@@ -814,13 +992,52 @@ void MainWindow::make_output_panels()
 
     m_outputC = std::make_unique<OATS::OutputPanel>("C");
     ui->hlOutput->addWidget(m_outputC.get());
-
 }
 
 void MainWindow::cue_next_schedule(OATS::ScheduleItem* si, OATS::OutputPanel* op)
 {
     si->set_item_status(OATS::ItemStatus::CUED);
     op->cue_item(si);
+    op->set_panel_status(OATS::PanelStatus::CUED);
+
+    auto duration_seconds = (int)si->audio().duration()/1000;
+    auto intro_seconds = (int)si->audio().intro()/1000;
+    auto fade_seconds = (int)si->audio().fade_delay()/1000;
+
+    int is_u1 = (int)intro_seconds/60;
+    int is_u2 = intro_seconds % 60;
+
+    int ds_u1 = (int)duration_seconds/60;
+    int ds_u2 = duration_seconds % 60;
+
+    int fs_u1 = (int)fade_seconds/60;
+    int fs_u2 = fade_seconds % 60;
+
+    QString cue_string = QString("%1:%2 / %3:%4 / %5:%6").arg(is_u1, 2, 10, QChar('0'))
+                                                         .arg(is_u2, 2, 10, QChar('0'))
+                                                         .arg(ds_u1, 2, 10, QChar('0'))
+                                                         .arg(ds_u2, 2, 10, QChar('0'))
+                                                         .arg(fs_u1, 2, 10, QChar('0'))
+                                                         .arg(fs_u2, 2, 10, QChar('0'));
+    op->set_cue_time_string(cue_string);
+
+    op->update_progress_bar(0);
+
+    if (si->audio().intro() > 0) {
+        op->set_progress_bar_background(OATS::ProgressBarBGColor::RED);
+    } else {
+        op->set_progress_bar_background(OATS::ProgressBarBGColor::BLUE);
+    }
+
+    if (op->panel_name() == "A"){
+        qDebug() << "CUE_NEXT_SCHEDULE::* A *";
+        test_set_triggerA();
+        test_set_fadeA();
+    } else {
+        qDebug() << "CUE_NEXT_SCHEDULE::* B *";
+        test_set_triggerB();
+        test_set_fadeB();
+    }
 }
 
 
@@ -871,7 +1088,7 @@ void MainWindow::play_audio(OATS::OutputPanel* op)
 
     display_schedule(ui->gridScroll->value());
 
-    calculate_trigger_times();
+    //calculate_trigger_times();
 
 //    auto main_timer_interval = 25ms;
 //    m_main_player_timer->start(main_timer_interval);
@@ -884,10 +1101,23 @@ void MainWindow::stop_audio(OATS::OutputPanel* op)
     if (op->schedule_item()->item_status() == OATS::ItemStatus::PLAYING){
         op->schedule_item()->set_item_status(OATS::ItemStatus::STOP);
         op->schedule_item()->notify();
+        op->set_panel_status(OATS::PanelStatus::WAITING);
     }
 
     display_schedule(ui->gridScroll->value());
 
+    op->reset_play_button();
+    op->reset_stop_button();
+
+    op->update_progress_bar(100);
+
+    if (op->panel_name() == "A"){
+        test_set_triggerA();
+        test_set_fadeA();
+    } else {
+        test_set_triggerB();
+        test_set_fadeB();
+    }
 }
 
 OATS::OutputPanel* MainWindow::find_output_panel(int panel_id)
@@ -910,14 +1140,21 @@ void MainWindow::test()
 {
     test_setup();
 
-    /*
-    // print ScheduleItems in GridItems
-    for (int i=0; i < MAX_GRID_ITEMS; ++i){
-        qDebug() << i << "." << QString::fromStdString(m_schedule_grid[i]->schedule_item()->audio().title())
-                 << " Index: "<< m_schedule_grid[i]->schedule_item()->index()
-                 << " Grid Index: "<<m_schedule_grid[i]->grid_index();
-    }
-    */
+    auto slow_flash_interval = 400ms;
+    m_slow_flash_timer->start(slow_flash_interval);
+
+    auto fast_flash_interval = 250ms;
+    m_fast_flash_timer->start(fast_flash_interval);
+
+    auto main_timer_interval = 25ms;
+    m_main_player_timer->start(main_timer_interval);
+
+    auto countdown_interval = 50ms;
+    m_countdown_timer->start(countdown_interval);
+
+    ui->cbStatusA->setCurrentIndex(1);
+
+
 }
 
 void MainWindow::calculate_trigger_times()
@@ -1030,14 +1267,14 @@ void MainWindow::test_setup()
     connect(ui->cbStatusA, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::test_change_outputA_status);
     connect(ui->cbStatusB, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::test_change_outputB_status);
 
-    connect(ui->tbTRA, &QToolButton::clicked, this, &MainWindow::test_set_RT_outputA);
-    connect(ui->tbTRB, &QToolButton::clicked, this, &MainWindow::test_set_RT_outputB);
+    //connect(ui->tbTRA, &QToolButton::clicked, this, &MainWindow::test_set_RT_outputA);
+    //connect(ui->tbTRB, &QToolButton::clicked, this, &MainWindow::test_set_RT_outputB);
 
-    connect(ui->tbTriggerA, &QToolButton::clicked, this, &MainWindow::test_set_triggerA);
-    connect(ui->tbTriggerB, &QToolButton::clicked, this, &MainWindow::test_set_triggerB);
+    //connect(ui->tbTriggerA, &QToolButton::clicked, this, &MainWindow::test_set_triggerA);
+    //connect(ui->tbTriggerB, &QToolButton::clicked, this, &MainWindow::test_set_triggerB);
 
-    connect(ui->tbFadeA, &QToolButton::clicked, this, &MainWindow::test_set_fadeA);
-    connect(ui->tbFadeB, &QToolButton::clicked, this, &MainWindow::test_set_fadeB);
+    //connect(ui->tbFadeA, &QToolButton::clicked, this, &MainWindow::test_set_fadeA);
+    //connect(ui->tbFadeB, &QToolButton::clicked, this, &MainWindow::test_set_fadeB);
 }
 
 void MainWindow::test_set_current_playing_item()
@@ -1049,6 +1286,13 @@ void MainWindow::test_set_current_playing_item()
 }
 void MainWindow::test_slow_flash()
 {
+    int duration = 15000;
+    int d_secs = (int)duration/1000;
+    int d_sec1 = (int)d_secs/60;
+    int d_sec2 = d_secs % 60;
+    QString test = QString("Time: %1:%2").arg(d_sec1, 2, 10, QChar('0')).arg(d_sec2, 2, 10, QChar('0'));
+    qDebug() << test;
+/*
     qDebug() << "test_slow_flash...";
     test_set_current_playing_item();
     if (!ui->btnSlowFlash->isChecked()){
@@ -1059,6 +1303,7 @@ void MainWindow::test_slow_flash()
         auto slow_flash_interval = 400ms;
         m_slow_flash_timer->start(slow_flash_interval.count());
     }
+    */
 }
 
 void MainWindow::test_fast_flash()
@@ -1088,6 +1333,14 @@ void MainWindow::test_change_outputA_status(int index)
 {
     m_outputA->set_panel_status((OATS::PanelStatus)index);
     m_outputA->schedule_item()->set_item_status((OATS::ItemStatus)index);
+
+    if (m_outputA->panel_status() == OATS::PanelStatus::CUED){
+        test_set_triggerA();
+        test_set_fadeA();
+    }
+
+    m_outputA->update_progress_bar(0);
+
     //calculate_trigger_times();
     qDebug() << " ** A ** ";
     qDebug() << "OPA->Status: "<< m_outputA->panel_status_text();
@@ -1105,24 +1358,24 @@ void MainWindow::test_change_outputB_status(int index)
     auto next_si = find_next_schedule_item(m_current_playing_item.item);
     m_outputB->cue_item(next_si);
 
-    qDebug() << "** AAA ** ";
     m_outputB->set_panel_status((OATS::PanelStatus)index);
-    qDebug() << "** BBB ** " << index;
     m_outputB->schedule_item()->set_item_status((OATS::ItemStatus)index);
-    qDebug() << "** CCC ** ";
     //calculate_trigger_times();
+    if (m_outputB->panel_status() == OATS::PanelStatus::CUED){
+        test_set_triggerB();
+        test_set_fadeB();
+    }
 }
 
 void MainWindow::test_set_RT_outputA()
 {
-    qDebug() << "sbA:value: "<< ui->sbA->value();
-    m_outputA->set_time_remaining(ui->sbA->value());
+    //m_outputA->set_time_remaining(ui->sbA->value());
     qDebug() << "OPA->Timer Remaining: "<< m_outputA->time_remaining();
 }
 
 void MainWindow::test_set_RT_outputB()
 {
-    m_outputB->set_time_remaining(ui->sbB->value());
+    //m_outputB->set_time_remaining(ui->sbB->value());
     qDebug() << "OPB->Timer Remaining: "<< m_outputB->time_remaining();
 }
 
@@ -1140,12 +1393,14 @@ void MainWindow::test_set_triggerB()
 
 void MainWindow::test_set_fadeA()
 {
-    m_outputA->set_fade_trigger_tick_stamp(ui->sbFadeA->value());
+    m_outputA->set_fade_trigger_tick_stamp(2000);
+    //m_outputA->set_fade_trigger_tick_stamp(ui->sbFadeA->value());
     qDebug() << "OP_A->fade trigger stamp: " << m_outputA->fade_trigger_tick_stamp();
 }
 
 void MainWindow::test_set_fadeB()
 {
-    m_outputB->set_fade_trigger_tick_stamp(ui->sbFadeB->value());
+    m_outputB->set_fade_trigger_tick_stamp(2000);
+    //m_outputB->set_fade_trigger_tick_stamp(ui->sbFadeB->value());
     qDebug() << "OP_B->fade trigger stamp: " << m_outputB->fade_trigger_tick_stamp();
 }

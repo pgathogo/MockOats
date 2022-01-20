@@ -13,6 +13,7 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QContextMenuEvent;
 class QPushButton;
+class QProgressBar;
 
 
 namespace OATS{
@@ -167,6 +168,7 @@ namespace OATS{
 
     enum class PanelStatus{WAITING, CUED, PLAYING, STOP};
     enum class ButtonFlashColor{NONE, GREEN, ORANGE, RED};
+    enum class ProgressBarBGColor{RED, BLUE, GREEN};
 
     class OutputPanel : public QFrame
     {
@@ -181,6 +183,8 @@ namespace OATS{
 
         int id() const;
         void set_id(int);
+
+        QString panel_name();
 
         QLabel* title();
         QLabel* artist();
@@ -217,6 +221,14 @@ namespace OATS{
         OATS::ScheduleItem* schedule_item();
 
         TimeStamp time_remaining_ts();
+
+        void reset_play_button();
+        void reset_stop_button();
+        void update_progress_bar(int);
+        void set_progress_bar_background(OATS::ProgressBarBGColor);
+
+        void set_cue_time_string(QString);
+        QString cue_time_string();
     signals:
 //        void play_item(int panel_id, ScheduleItem* si);
 //        void stop_play(int panel_id, ScheduleItem* si);
@@ -232,6 +244,7 @@ namespace OATS{
         QLabel* m_title;
         QLabel* m_artist;
         QLabel* m_time;
+        QProgressBar* m_progress_bar;
 
         QHBoxLayout* m_layout_buttons;
         QHBoxLayout* m_layout_title;
@@ -253,6 +266,8 @@ namespace OATS{
 
         bool m_stop_slow_flash_bit{false};
         bool m_stop_fast_flash_bit{false};
+
+        QString m_cue_time_string;
 
         TimeStamp m_ts;
     };

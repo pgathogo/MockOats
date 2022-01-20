@@ -107,6 +107,8 @@ private slots:
     void test_set_fadeA();
     void test_set_fadeB();
 
+    void count_down();
+
 public slots:
     void test_set_RT_outputA();
     void test_set_RT_outputB();
@@ -129,6 +131,7 @@ private:
 
     std::unique_ptr<QTimer> m_slow_flash_timer;
     std::unique_ptr<QTimer> m_fast_flash_timer;
+    std::unique_ptr<QTimer> m_countdown_timer;
     std::unique_ptr<QTimer> m_main_player_timer;
 
     static int s_sched_ref;

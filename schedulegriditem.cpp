@@ -7,6 +7,7 @@
 #include <QContextMenuEvent>
 #include <QPushButton>
 #include <QDebug>
+#include <QProgressBar>
 
 #include <chrono>
 #include <sstream>
@@ -470,7 +471,7 @@ namespace OATS{
 
         m_play_button = new QPushButton("PLAY "+name);
         connect(m_play_button, &QPushButton::clicked, this, &OutputPanel::play);
-        m_play_button->setStyleSheet("background-color: rgb(78, 207, 42)");
+//        m_play_button->setStyleSheet("background-color: rgb(78, 207, 42)");
 
         m_stop_button = new QPushButton("STOP "+name);
         connect(m_stop_button, &QPushButton::clicked, this, &OutputPanel::stop);
@@ -504,8 +505,22 @@ namespace OATS{
 
         m_time = new QLabel("00:00 / 00:00 / 00:00");
         m_time->setAlignment(Qt::AlignHCenter);
+
+        m_progress_bar = new QProgressBar();
+//        m_progress_bar->setLayoutDirection(Qt::RightToLeft);
+        m_progress_bar->setTextVisible(true);
+        m_progress_bar->setFormat("00:00 / 00:00 / 00:00");
+        //m_progress_bar->setStyleSheet("background-color:#40D58A; border: 1px solid grey; border-radius: 5px;"
+        m_progress_bar->setStyleSheet("background-color:#40D58A; border: 0px solid grey; border-radius: 0px;"
+                                      "text-align: center;font: 75 italic 14pt 'Arial'; ");
+        m_progress_bar->setMinimum(0);
+        m_progress_bar->setMaximum(100);
+        m_progress_bar->setValue(0);
+        //m_progress_bar->setAlignment(Qt::AlignCenter);
+
         m_layout_time = new QHBoxLayout();
-        m_layout_time->addWidget(m_time);
+//        m_layout_time->addWidget(m_time);
+        m_layout_time->addWidget(m_progress_bar);
 
         m_main_panel = new QVBoxLayout();
         m_main_panel->addLayout(m_layout_buttons);
@@ -519,18 +534,20 @@ namespace OATS{
 
     OutputPanel::~OutputPanel()
     {
-        delete m_title;
-        delete m_artist;
-        delete m_time;
-
         delete m_play_button;
         delete m_stop_button;
         delete m_status_image;
+        delete m_title;
+        delete m_artist;
+        delete m_time;
+        delete m_progress_bar;
 
         delete m_layout_buttons;
         delete m_layout_title;
         delete m_layout_artist;
         delete m_layout_time;
+
+        //delete m_schedule_item;
 
         delete m_main_panel;
     }
@@ -621,6 +638,11 @@ namespace OATS{
         m_id = i;
     }
 
+    QString OutputPanel::panel_name()
+    {
+        return m_panel_name;
+    }
+
     void OutputPanel::set_panel_style()
     {
         setStyleSheet("");
@@ -697,7 +719,8 @@ namespace OATS{
     void OutputPanel::slow_flash_stop_button()
     {
         if (!m_stop_slow_flash_bit){
-            m_stop_button->setStyleSheet("background-color: rgb(255, 170, 255)");
+            //m_stop_button->setStyleSheet("background-color: rgb(255, 170, 255)");
+            m_stop_button->setStyleSheet("background-color: rgb(210, 4, 45)");
             m_stop_slow_flash_bit = true;
         } else {
             m_stop_button->setStyleSheet("");
@@ -720,7 +743,7 @@ namespace OATS{
             flash_color =  "background-color: rgb(255, 195, 0)";
             break;
         case OATS::ButtonFlashColor::RED:
-            flash_color =  "background-color: rgb(210, 4, 45)";
+            flash_color = "background-color: rgb(255, 0, 0)";
             break;
         default:
             flash_color = "";
@@ -758,5 +781,53 @@ namespace OATS{
         return op->m_time_remaining;
     }
 
+    void OutputPanel::reset_play_button()
+    {
+        m_play_button->setStyleSheet("");
+    }
+
+    void OutputPanel::reset_stop_button()
+    {
+        m_stop_button->setStyleSheet("");
+    }
+
+    void OutputPanel::update_progress_bar(int value)
+    {
+        m_progress_bar->setValue(value);
+    }
+
+    void OutputPanel::set_cue_time_string(QString cue_string)
+    {
+        m_cue_time_string = cue_string;
+        m_progress_bar->setFormat(cue_string);
+    }
+
+    QString OutputPanel::cue_time_string()
+    {
+        return m_cue_time_string;
+    }
+
+    void OutputPanel::set_progress_bar_background(OATS::ProgressBarBGColor bg_color)
+    {
+        switch(bg_color)
+        {
+        case OATS::ProgressBarBGColor::RED:
+            m_progress_bar->setStyleSheet("background-color:#F51503; border: 0px solid grey;"
+                                          "border-radius: 0px; text-align: center; text-align: center;font: 75 italic 14pt 'Arial'; ");
+            break;
+        case OATS::ProgressBarBGColor::BLUE:
+            m_progress_bar->setStyleSheet("background-color:#0457E8; border: 0px solid grey; border-radius: 0px; "
+                                          "text-align: center;text-align: center;font: 75 italic 14pt 'Arial'; ");
+            break;
+        case OATS::ProgressBarBGColor::GREEN:
+            m_progress_bar->setStyleSheet("background-color:#04E846; border: 0px solid grey;"
+                                          "border-radius: 0px; text-align: center;text-align: center;font: 75 italic 14pt 'Arial'; ");
+        default:
+            //green
+            m_progress_bar->setStyleSheet("background-color:#04E846; border: 0px solid grey;"
+                                          "border-radius: 0px; text-align: center;text-align: center;font: 75 italic 14pt 'Arial'; ");
+        }
+
+    }
 
 }
